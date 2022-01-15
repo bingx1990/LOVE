@@ -24,7 +24,7 @@
 #'   otherwise, take the intersection.
 #' @param rep_CV The number of repetitions used for cross validation.
 #' @inheritParams KfoldCV_delta
-#
+#'
 #' @return A list of objects including: \itemize{
 #'   \item \code{K} The estimated number of clusters.
 #'   \item \code{pureVec} The estimated set of pure variables.
@@ -36,9 +36,7 @@
 #'   \item \code{Gamma} The diagonal of the covariance matrix of \eqn{E}.
 #'   \item \code{optDelta} The selected value of \eqn{\delta}.
 #' }
-
-
-
+#'
 #' @examples
 #' p <- 6
 #' n <- 100
@@ -49,6 +47,7 @@
 #' X <- Z %*% t(A) + E
 #' res_LOVE <- LOVE(X, pure_homo = F, delta = NULL)
 #' res_LOVE <- LOVE(X, pure_homo = T, delta = seq(0.1, 1.1 ,0.1))
+#'
 #' @export
 #' @import stats
 
@@ -98,6 +97,9 @@ LOVE <- function(X, lbd = 0.5, mu = 0.5, est_non_pure_row = "HT",
       cat("Algorithm fails due to the non-existence of any pure variable.\n")
       stop()
     }
+
+    if (verbose)
+      cat("Estimating C and Sigma_IJ...\n")
 
     C_hat <- EstC(Sigma, A_hat, diagonal)
 
@@ -211,9 +213,6 @@ LOVE <- function(X, lbd = 0.5, mu = 0.5, est_non_pure_row = "HT",
               Gamma = Gamma_hat,
               optDelta = optDelta))
 }
-
-
-
 
 
 
