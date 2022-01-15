@@ -11,14 +11,13 @@ latent factor model.
 
 ## Installation
 
-You can install the released version of LOVE from
-[CRAN](https://CRAN.R-project.org) with:
+<!-- the released version of LOVE from [CRAN](https://CRAN.R-project.org) with: -->
+<!-- ``` r -->
+<!-- install.packages("LOVE") -->
+<!-- ``` -->
 
-``` r
-install.packages("LOVE")
-```
-
-And the development version from [GitHub](https://github.com/) with:
+You can install the development version from
+[GitHub](https://github.com/) with:
 
 ``` r
 install.packages("devtools")
@@ -27,8 +26,8 @@ devtools::install_github("bingx1990/LOVE")
 
 ## Example
 
-This is a basic example which shows you how to use two main functions of
-LoveER: LOVE and ER. We start by generating a synthetic data set.
+This is a basic example which shows you how to use the main function of
+LOVE. We start by generating a synthetic data set.
 
 ``` r
 p <- 6

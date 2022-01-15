@@ -27,14 +27,16 @@ Est_Pure <- function(score_mat, delta) {
 #' @param M The product matrix returned by \code{moments} of \code{\link{Score_mat}}.
 #' @inheritParams Score_mat
 #' @param I_part The partition of parallel rows.
-#' @param I The set of parallel rows.
+#' @param I_set The set of parallel rows.
+#'
 #' @noRd
 
 
-Est_BI_C <- function(M, R, I_part, I) {
+Est_BI_C <- function(M, R, I_part, I_set) {
   K <- length(I_part)
   B_square <- matrix(0, nrow(R), K)
-  signs <- Gamma <- rep(0, nrow(R))
+  signs <- rep(1, nrow(R))
+  Gamma <- rep(0, nrow(R))
   for (k in 1:K) {
     I_k <- I_part[[k]]
     for (ell in 1:length(I_k)) {
@@ -49,12 +51,12 @@ Est_BI_C <- function(M, R, I_part, I) {
     }
   }
   B <- sqrt(B_square)
-  BI <- signs[I] * B[I,,drop = F]
-  B[I,] = BI
+  BI <- signs[I_set] * B[I_set,,drop = F]
+  B = signs * B
   cross_BI <- crossprod(BI)
   B_left_inv <- solve(cross_BI, t(BI))
 
-  C_hat <- B_left_inv %*% tcrossprod(R[I,I] - diag(Gamma[I]), B_left_inv)
+  C_hat <- B_left_inv %*% tcrossprod(R[I_set,I_set] - diag(Gamma[I_set]), B_left_inv)
   diag(C_hat) <- 1
 
 

@@ -9,9 +9,9 @@ LOVE(
   lbd = 0.5,
   mu = 0.5,
   est_non_pure_row = "HT",
+  verbose = TRUE,
   pure_homo = FALSE,
   diagonal = FALSE,
-  verbose = TRUE,
   delta = NULL,
   merge = FALSE,
   rep_CV = 50,
@@ -32,12 +32,12 @@ LOVE(
 \item{est_non_pure_row}{String. Procedure used for estimating the non-pure
 rows. One of \{"HT", "ST", "Dantzig"\}.}
 
+\item{verbose}{Logical. Set FALSE to suppress printing the progress.}
+
 \item{pure_homo}{Logical. TRUE if the pure loadings have the same magnitude.}
 
 \item{diagonal}{Logical. If TRUE, the covariance matrix of \eqn{Z} is
 diagonal; else FALSE.}
-
-\item{verbose}{Logical. Set FALSE to suppress printing the progress.}
 
 \item{delta}{The grid of leading constant of \eqn{\delta}.}
 
@@ -74,9 +74,10 @@ A list of objects including: \itemize{
 }
 }
 \description{
-Perform overlapping (variable) clustering of a \eqn{p}-dimensional feature
-generated from the latent factor model \deqn{X = AZ + E} with identifiability
-conditions on \eqn{A} and \eqn{Cov(Z)}.
+Perform overlapping (variable) clustering of a \eqn{p}-
+dimensional feature generated from the latent factor model
+\deqn{X = AZ + E}
+with identifiability conditions on \eqn{A} and \eqn{Cov(Z)}.
 }
 \examples{
 p <- 6

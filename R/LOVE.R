@@ -6,9 +6,10 @@
 
 #' @title LOVE: Latent-model based OVErlapping clustering
 #'
-#' @description Perform overlapping (variable) clustering of a \eqn{p}-dimensional feature
-#' generated from the latent factor model \deqn{X = AZ + E} with identifiability
-#' conditions on \eqn{A} and \eqn{Cov(Z)}.
+#' @description Perform overlapping (variable) clustering of a \eqn{p}-
+#' dimensional feature generated from the latent factor model
+#' \deqn{X = AZ + E}
+#' with identifiability conditions on \eqn{A} and \eqn{Cov(Z)}.
 #'
 #' @param X A \eqn{n} by \eqn{p} data matrix.
 #' @param lbd The grid of leading constant of \eqn{\lambda}.
@@ -52,8 +53,8 @@
 #' @import stats
 
 
-LOVE <- function(X, lbd = 0.5, mu = 0.5, est_non_pure_row = "HT",
-                 pure_homo = FALSE, diagonal = FALSE, verbose = TRUE,
+LOVE <- function(X, lbd = 0.5, mu = 0.5, est_non_pure_row = "HT", verbose = TRUE,
+                 pure_homo = FALSE, diagonal = FALSE,
                  delta = NULL, merge = FALSE, rep_CV = 50,
                  ndelta = 50, q = 2, exact = FALSE, max_pure = NULL, nfolds = 10) {
 
@@ -125,7 +126,7 @@ LOVE <- function(X, lbd = 0.5, mu = 0.5, est_non_pure_row = "HT",
 
     # Post-select pure variables
     if (length(est_I) >= 2) {
-      BI_C_res <- Est_BI_C(CV_res$moments, R_hat, est_I)
+      BI_C_res <- Est_BI_C(CV_res$moments, R_hat, est_I, est_I_set)
       est_I <- Re_Est_Pure(X, Sigma, CV_res$moments, est_I, BI_C_res$Gamma)
       est_I_set <- as.numeric(unlist(est_I))
     }
