@@ -1,6 +1,18 @@
 ###     Pre-screening
 
 
+#' @title Screen features that are pure noise
+#'
+#' @description \code{Screen_X} finds features that are close to pure noise.
+#'
+#' @inheritParams LOVE
+#' @param max_prop A numeric value between [0, 1] specifying the maximal
+#'   proportional of pure noise features. Default is 0.5 meaning that at most
+#'   50% of features are pure noise.
+#'
+#' @return A vector of indices that are detected as pure noise.
+#' @export
+
 Screen_X <- function(X, max_prop = 0.5) {
   p <- ncol(X)
   n <- nrow(X)
@@ -16,14 +28,6 @@ Screen_X <- function(X, max_prop = 0.5) {
   row_scale <- rowSums(off_R1 ** 2)
   thresh_range <- quantile(row_scale, c(0, max_prop))
   thresh_grid <- seq(thresh_range[1], thresh_range[2], length.out = 50)
-
-  # sapply(thresh_grid, function(x, row_scale, X1, X2) {
-  #   noise_ind <- which(row_scale < x)
-  #   pred_X <- X1
-  #   pred_X[,noise_ind] = 0
-  #   Mse(X2, pred_X)
-  # }, row_scale = row_scale, X1 = X1, X2 = X2)
-
 
   R2 <- cor(X2)
   off_R2 <- R2
