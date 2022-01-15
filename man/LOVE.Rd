@@ -88,4 +88,5 @@ E <- matrix(rnorm(n * p), n, p)
 X <- Z \%*\% t(A) + E
 res_LOVE <- LOVE(X, pure_homo = F, delta = NULL)
 res_LOVE <- LOVE(X, pure_homo = T, delta = seq(0.1, 1.1 ,0.1))
+
 }

@@ -49,7 +49,7 @@ A list of objects including: \itemize{
     \item\code{I_part} The partition of parallel rows.
   }
   \item\code{score} The score matrix.
-  \item\code{moments} The crossproduct matrix \code{R'R}.
+  \item\code{moments} The crossproduct matrix \eqn{R'R}.
 }
 }
 \description{
