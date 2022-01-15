@@ -129,6 +129,8 @@ LOVE <- function(X, lbd = 0.5, mu = 0.5, est_non_pure_row = "HT", verbose = FALS
       BI_C_res <- Est_BI_C(CV_res$moments, R_hat, est_I, est_I_set)
       est_I <- Re_Est_Pure(X, Sigma, CV_res$moments, est_I, BI_C_res$Gamma)
       est_I_set <- as.numeric(unlist(est_I))
+    } else if (length(est_I) == 0) {
+      cat("Algorithm fails due to the non-existence of any pure variable.\n")
     }
 
     D_Sigma <- diag(Sigma)

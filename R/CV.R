@@ -143,78 +143,93 @@ KfoldCV_delta <- function(X, delta = NULL, ndelta = 50, q = 2, exact = FALSE,
   score_mat <- score_res$score
   moments_mat <- score_res$moments
 
-  if (is.null(delta)) {
-    if (is.null(max_pure))
-      max_pure <- ifelse(n_total > p_total, 1, 0.8)
+  if (length(delta) == 1) {
+    # when only one value of delta is provided.
+    return(list(foldid = NA,
+                delta_min = delta,
+                delta_1se = delta,
+                delta = delta,
+                cv_mean = NA,
+                cv_sd = NA,
+                est_pure = Est_Pure(score_mat, delta),
+                score = score_mat,
+                moments = moments_mat))
+  } else {
+    # use k-fold CV validation
+    if (is.null(delta)) {
+      # when delta is not provided, the following generates a grid of delta.
+      if (is.null(max_pure))
+        max_pure <- ifelse(n_total > p_total, 1, 0.8)
 
-    delta_max <- quantile(apply(score_mat[-p_total,], 1, min, na.rm = T),
-                          probs = max_pure)
-    delta <- seq(delta_max, min(score_mat, na.rm = T), length.out = ndelta)
-  }
+      delta_max <- quantile(apply(score_mat[-p_total,], 1, min, na.rm = T),
+                            probs = max_pure)
+      delta <- seq(delta_max, min(score_mat, na.rm = T), length.out = ndelta)
+    }
 
-  indicesPerGroup = extract(sample(1:n_total), partition(n_total, nfolds))
+    indicesPerGroup = extract(sample(1:n_total), partition(n_total, nfolds))
 
-  loss <- matrix(NA, nfolds, length(delta))
-  for (i in 1:nfolds) {
-    valid_ind <- indicesPerGroup[[i]]
-    trainX <- X[-valid_ind,, drop = F]
-    validX <- X[valid_ind,, drop = F]
-    R1 <- cor(trainX);  R2 <- cor(validX)
+    loss <- matrix(NA, nfolds, length(delta))
+    for (i in 1:nfolds) {
+      valid_ind <- indicesPerGroup[[i]]
+      trainX <- X[-valid_ind,, drop = F]
+      validX <- X[valid_ind,, drop = F]
+      R1 <- cor(trainX);  R2 <- cor(validX)
 
-    score_res <- Score_mat(R1, q, exact)
-    score_mat_1 <- score_res$score
-    moments_1 <- score_res$moments
+      score_res <- Score_mat(R1, q, exact)
+      score_mat_1 <- score_res$score
+      moments_1 <- score_res$moments
 
 
-    for (j in 1:length(delta)) {
-      delta_j <- delta[j]
-      if (j == 1) {
-        pure_res <- Est_Pure(score_mat_1, delta_j)
-        I <- pure_res$I
-        I_part <- pure_res$I_part
-      } else {
-        pure_res <- Est_Pure(score_mat_1[pre_I, pre_I], delta_j)
-        I <- pre_I[pure_res$I]
-        I_part <- lapply(pure_res$I_part, function(x, pre_I) {pre_I[as.numeric(x)]}, pre_I = pre_I)
-      }
-      pre_I <- I
-
-      if (length(I_part) == 0)
-        break
-      else {
-        result <- Est_BI_C(moments_1, R1, I_part, I)
-        B_hat <- result$B
-        C_hat <- result$C
-        B_hat_left_inv <- result$B_left_inv
-        tmp_R1 <- R1
-        tmp_R1[I,I] <- B_hat[I,,drop = F] %*% tcrossprod(C_hat, B_hat[I,, drop = F])
-        if (length(I) != p_total) {
-          tmp <- B_hat_left_inv %*% tmp_R1[I,-I]
-          tmp_prime <- try(solve(C_hat, tmp), silent = F)
-          if (class(tmp_prime)[1] == "try-error")
-            tmp_prime <- MASS::ginv(C_hat) %*% tmp
-          tmp_R1[-I, -I] <- crossprod(tmp, tmp_prime)
+      for (j in 1:length(delta)) {
+        delta_j <- delta[j]
+        if (j == 1) {
+          pure_res <- Est_Pure(score_mat_1, delta_j)
+          I <- pure_res$I
+          I_part <- pure_res$I_part
+        } else {
+          pure_res <- Est_Pure(score_mat_1[pre_I, pre_I], delta_j)
+          I <- pre_I[pure_res$I]
+          I_part <- lapply(pure_res$I_part, function(x, pre_I) {pre_I[as.numeric(x)]}, pre_I = pre_I)
         }
-        loss[i,j] <- offSum(tmp_R1 - R2, 1) / p_total / (p_total - 1)
+        pre_I <- I
+
+        if (length(I_part) == 0)
+          break
+        else {
+          result <- Est_BI_C(moments_1, R1, I_part, I)
+          B_hat <- result$B
+          C_hat <- result$C
+          B_hat_left_inv <- result$B_left_inv
+          tmp_R1 <- R1
+          tmp_R1[I,I] <- B_hat[I,,drop = F] %*% tcrossprod(C_hat, B_hat[I,, drop = F])
+          if (length(I) != p_total) {
+            tmp <- B_hat_left_inv %*% tmp_R1[I,-I]
+            tmp_prime <- try(solve(C_hat, tmp), silent = F)
+            if (class(tmp_prime)[1] == "try-error")
+              tmp_prime <- MASS::ginv(C_hat) %*% tmp
+            tmp_R1[-I, -I] <- crossprod(tmp, tmp_prime)
+          }
+          loss[i,j] <- offSum(tmp_R1 - R2, 1) / p_total / (p_total - 1)
+        }
       }
     }
-  }
-  cv_mean <- apply(loss, 2, mean)
-  cv_sd <- apply(loss, 2, sd)
+    cv_mean <- apply(loss, 2, mean)
+    cv_sd <- apply(loss, 2, sd)
 
-  ind_min <- which.min(cv_mean)
-  delta_min <- delta[ind_min]
-  # delta_1se <- delta[min(which(cv_mean <= (cv_mean[ind_min] + cv_sd[ind_min])))]
-  delta_1se <- delta[range(which(cv_mean <= (cv_mean[ind_min] + cv_sd[ind_min])))]
-  return(list(foldid = indicesPerGroup,
-              delta_min = delta_min,
-              delta_1se = delta_1se,
-              delta = delta,
-              cv_mean = cv_mean,
-              cv_sd = cv_sd,
-              est_pure = Est_Pure(score_mat, delta_min),
-              score = score_mat,
-              moments = moments_mat))
+    ind_min <- which.min(cv_mean)
+    delta_min <- delta[ind_min]
+    # delta_1se <- delta[min(which(cv_mean <= (cv_mean[ind_min] + cv_sd[ind_min])))]
+    delta_1se <- delta[range(which(cv_mean <= (cv_mean[ind_min] + cv_sd[ind_min])))]
+    return(list(foldid = indicesPerGroup,
+                delta_min = delta_min,
+                delta_1se = delta_1se,
+                delta = delta,
+                cv_mean = cv_mean,
+                cv_sd = cv_sd,
+                est_pure = Est_Pure(score_mat, delta_min),
+                score = score_mat,
+                moments = moments_mat))
+  }
 }
 
 

@@ -45,6 +45,24 @@ clustering of the columns of the matrix.
 ``` r
 library(LOVE)
 # basic example code
-res_LOVE <- LOVE(X, pure_homo = FALSE, delta = NULL, verbose = FALSE)
-res_LOVE <- LOVE(X, pure_homo = TRUE, delta = seq(0.1, 1.1 ,0.1), verbose = FALSE)
+res_LOVE <- LOVE(X, pure_homo = FALSE)
+res_LOVE <- LOVE(X, pure_homo = TRUE, delta = seq(0.1, 1.1 ,0.1))
+```
+
+## Practical pre-screening
+
+In practice, we recommend a pre-screening procedure before calling the
+function. The function detects the features that are close to pure
+noise. The following example demonstrates the usage of .
+
+``` r
+aug_A <- rbind(A, c(0, 0))
+aug_p <- nrow(aug_A)
+E <- matrix(rnorm(n * aug_p), n, aug_p)
+X <- Z %*% t(aug_A) + E
+
+noise_ind <- Screen_X(X)
+feature_ind <- setdiff(1:aug_p, noise_ind)
+
+res_LOVE <- LOVE(X[,feature_ind,drop = F], pure_homo = FALSE)
 ```
