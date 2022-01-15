@@ -4,10 +4,11 @@ Title: Overlapping clustering based on latent factor models
 Version: 0.1.0
 Authors@R: person("Xin", "Bing", email = "xb43@cornell.edu",
   role = c("aut", "cre"))
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: LOVE is an overlapping clustering algorithm that has statistical
+  guarantees under structured latent factor models.
 License: MIT License + file LICENSE
 Encoding: UTF-8
 LazyData: true
-URL: https://github.com/hadley/dplyr
+URL: https://github.com/bingx1990/LOVE, https://projecteuclid.org/journals/annals-of-statistics/volume-48/issue-4/Adaptive-estimation-in-structured-factor-models-with-applications-to-overlapping/10.1214/19-AOS1877.short
 RoxygenNote: 7.1.1
+

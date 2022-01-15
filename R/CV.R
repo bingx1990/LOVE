@@ -127,7 +127,7 @@ CalFittedSigma <- function(Sigma, delta, Ms, arg_Ms, se_est, diagonal, merge) {
 #'     \item\code{I_part} The partition of parallel rows.
 #'   }
 #'   \item\code{score} The score matrix.
-#'   \item\code{moments} The crossproduct matrix \code{R'R}.
+#'   \item\code{moments} The crossproduct matrix \eqn{R'R}.
 #' }
 #'
 #' @export
