@@ -51,7 +51,10 @@
 #'
 #' @export
 #' @import stats
-
+#' @references Bing, X., Bunea, F., Yang N and Wegkamp, M. (2020) \emph{Adaptive
+#' estimation in structured factor models with applications to overlapping clustering},
+#' Annals of Statistics, Vol.48(4) 2055 - 2081, August 2020.
+#' \url{https://projecteuclid.org/journals/annals-of-statistics/volume-48/issue-4/Adaptive-estimation-in-structured-factor-models-with-applications-to-overlapping/10.1214/19-AOS1877.short}
 
 LOVE <- function(X, lbd = 0.5, mu = 0.5, est_non_pure_row = "HT", verbose = FALSE,
                  pure_homo = FALSE, diagonal = FALSE,
@@ -70,7 +73,8 @@ LOVE <- function(X, lbd = 0.5, mu = 0.5, est_non_pure_row = "HT", verbose = FALS
     if (verbose)
       cat("Select delta by using data splitting...\n")
     optDelta <- ifelse(length(deltaGrids) > 1,
-                       median(replicate(rep_CV, CV_Delta(X, deltaGrids, diagonal, se_est, merge))),
+                       median(replicate(rep_CV, CV_Delta(X, deltaGrids, diagonal,
+                                                         se_est, merge))),
                        deltaGrids)
 
     if (verbose)
@@ -85,7 +89,8 @@ LOVE <- function(X, lbd = 0.5, mu = 0.5, est_non_pure_row = "HT", verbose = FALS
     if (sum(pure_numb == 1) > 0) {
       cat("Change 'merge' to 'union' and reselecting delta ... \n")
       optDelta <- ifelse(length(deltaGrids) > 1,
-                         median(replicate(rep_CV, CV_Delta(X, deltaGrids, diagonal, se_est, merge = F))),
+                         median(replicate(rep_CV, CV_Delta(X, deltaGrids, diagonal,
+                                                           se_est, merge = F))),
                          deltaGrids)
       resultAI <- EstAI(Sigma, optDelta, se_est, merge = F)
     }
@@ -101,7 +106,8 @@ LOVE <- function(X, lbd = 0.5, mu = 0.5, est_non_pure_row = "HT", verbose = FALS
 
     C_hat <- EstC(Sigma, A_hat, diagonal)
 
-    # Estimate the covariance matrix of the error corresponding to non-pure variables
+    # Estimate the covariance matrix of the error corresponding to
+    # non-pure variables
     Gamma_hat <- rep(0, p)
     Gamma_hat[I_hat] <- diag(Sigma[I_hat, I_hat]) - diag(A_hat[I_hat,] %*% C_hat %*% t(A_hat[I_hat,]))
 

@@ -91,3 +91,9 @@ res_LOVE <- LOVE(X, pure_homo = FALSE, delta = NULL)
 res_LOVE <- LOVE(X, pure_homo = TRUE, delta = seq(0.1, 1.1 ,0.1))
 
 }
+\references{
+Bing, X., Bunea, F., Yang N and Wegkamp, M. (2020) \emph{Adaptive
+estimation in structured factor models with applications to overlapping clustering},
+Annals of Statistics, Vol.48(4) 2055 - 2081, August 2020.
+\url{https://projecteuclid.org/journals/annals-of-statistics/volume-48/issue-4/Adaptive-estimation-in-structured-factor-models-with-applications-to-overlapping/10.1214/19-AOS1877.short}
+}
