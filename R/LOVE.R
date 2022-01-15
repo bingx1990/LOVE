@@ -98,9 +98,6 @@ LOVE <- function(X, lbd = 0.5, mu = 0.5, est_non_pure_row = "HT",
       stop()
     }
 
-    if (verbose)
-      cat("Estimating C and Sigma_IJ...\n")
-
     C_hat <- EstC(Sigma, A_hat, diagonal)
 
     # Estimate the covariance matrix of the error corresponding to non-pure variables
@@ -158,12 +155,12 @@ LOVE <- function(X, lbd = 0.5, mu = 0.5, est_non_pure_row = "HT",
   if (verbose)
     cat("Finish estimating the pure loadings...\n")
 
-
   if (diagonal)
     Omega <- diag(diag(C_hat) ** (-1))
   else {
     if (verbose)
       cat("Select lambda for estimating the precision of Z...\n")
+
     lbdGrids <- lbd * optDelta
     optLbd <- ifelse(length(lbd) > 1,
                      median(replicate(rep_CV, CV_lbd(X, lbdGrids, A_hat, I_hat, diagonal))),
@@ -189,6 +186,7 @@ LOVE <- function(X, lbd = 0.5, mu = 0.5, est_non_pure_row = "HT",
                  "ST" = "Soft Thresholding",
                  "Dantzig" = "Dantzig"), "...\n")
     }
+
     if (est_non_pure_row == "HT")
       AJ <- threshA(t(Omega %*% Y), threshold)
     else if (est_non_pure_row == "ST")

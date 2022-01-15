@@ -44,8 +44,8 @@ The following code calls the LOVE function to perform overlapping
 clustering of the columns of the matrix.
 
 ``` r
-# library(LOVE)
-# # basic example code
-# res_LOVE <- LOVE(X)
-# res_LOVE <- LOVE(X, pure_homo = T)
+library(LOVE)
+# basic example code
+res_LOVE <- LOVE(X, pure_homo = FALSE, delta = NULL, verbose = FALSE)
+res_LOVE <- LOVE(X, pure_homo = TRUE, delta = seq(0.1, 1.1 ,0.1), verbose = FALSE)
 ```
