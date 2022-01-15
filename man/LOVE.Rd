@@ -9,7 +9,7 @@ LOVE(
   lbd = 0.5,
   mu = 0.5,
   est_non_pure_row = "HT",
-  verbose = TRUE,
+  verbose = FALSE,
   pure_homo = FALSE,
   diagonal = FALSE,
   delta = NULL,

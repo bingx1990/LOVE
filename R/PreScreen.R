@@ -8,7 +8,7 @@
 #' @inheritParams LOVE
 #' @param max_prop A numeric value between [0, 1] specifying the maximal
 #'   proportional of pure noise features. Default is 0.5 meaning that at most
-#'   50% of features are pure noise.
+#'   50\% of features are pure noise.
 #'
 #' @return A vector of indices that are detected as pure noise.
 #' @export

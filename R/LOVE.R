@@ -53,7 +53,7 @@
 #' @import stats
 
 
-LOVE <- function(X, lbd = 0.5, mu = 0.5, est_non_pure_row = "HT", verbose = TRUE,
+LOVE <- function(X, lbd = 0.5, mu = 0.5, est_non_pure_row = "HT", verbose = FALSE,
                  pure_homo = FALSE, diagonal = FALSE,
                  delta = NULL, merge = FALSE, rep_CV = 50,
                  ndelta = 50, q = 2, exact = FALSE, max_pure = NULL, nfolds = 10) {
