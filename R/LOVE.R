@@ -45,8 +45,8 @@
 #' Z <- matrix(rnorm(n * K, sd = sqrt(2)), n, K)
 #' E <- matrix(rnorm(n * p), n, p)
 #' X <- Z %*% t(A) + E
-#' res_LOVE <- LOVE(X, pure_homo = F, delta = NULL)
-#' res_LOVE <- LOVE(X, pure_homo = T, delta = seq(0.1, 1.1 ,0.1))
+#' res_LOVE <- LOVE(X, pure_homo = FALSE, delta = NULL)
+#' res_LOVE <- LOVE(X, pure_homo = TRUE, delta = seq(0.1, 1.1 ,0.1))
 #'
 #' @export
 #' @import stats

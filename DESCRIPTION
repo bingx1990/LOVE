@@ -11,4 +11,8 @@ Encoding: UTF-8
 LazyData: true
 URL: https://github.com/bingx1990/LOVE, https://projecteuclid.org/journals/annals-of-statistics/volume-48/issue-4/Adaptive-estimation-in-structured-factor-models-with-applications-to-overlapping/10.1214/19-AOS1877.short
 RoxygenNote: 7.1.1
-
+Imports:
+  igraph,
+  stats,
+  MASS,
+  linprog

@@ -192,7 +192,7 @@ KfoldCV_delta <- function(X, delta = NULL, ndelta = 50, q = 2, exact = FALSE,
           tmp <- B_hat_left_inv %*% tmp_R1[I,-I]
           tmp_prime <- try(solve(C_hat, tmp), silent = F)
           if (class(tmp_prime)[1] == "try-error")
-            tmp_prime <- ginv(C_hat) %*% tmp
+            tmp_prime <- MASS::ginv(C_hat) %*% tmp
           tmp_R1[-I, -I] <- crossprod(tmp, tmp_prime)
         }
         loss[i,j] <- offSum(tmp_R1 - R2, 1) / p_total / (p_total - 1)
@@ -216,40 +216,6 @@ KfoldCV_delta <- function(X, delta = NULL, ndelta = 50, q = 2, exact = FALSE,
               score = score_mat,
               moments = moments_mat))
 }
-
-
-
-
-
-Compute_Loss <- function(delta, score_mat_1, moments_1, R1, R2) {
-  pure_res <- Est_Pure(score_mat_1, delta)
-  I_part <- pure_res$I_part
-
-  if (length(I_part) == 0)
-    loss <- NA
-  else {
-    I <- pure_res$I
-    result <- Est_BI_C(moments_1, R1, I_part, I)
-    B_hat <- result$B
-    C_hat <- result$C
-    B_hat_left_inv <- result$B_left_inv
-    R1[I,I] <- B_hat[I,,drop = F] %*% tcrossprod(C_hat, B_hat[I,, drop = F])
-    if (length(I) != nrow(R1)) {
-      # J <- setdiff(1:nrow(R1), I)
-      # R1[J, J] <- R1[J, I] %*% ginv(R1[I,I]) %*% R1[I, J]
-
-      tmp <- B_hat_left_inv %*% R1[I,-I]
-      tmp_prime <- try(solve(C_hat, tmp), silent = T)
-      if (class(tmp_prime)[1] == "try-error")
-        tmp_prime <- ginv(C_hat) %*% tmp
-      R1[-I, -I] <- crossprod(tmp, tmp_prime)
-    }
-    loss <- Mean_Off_Diag(R1, R2)
-  }
-  loss
-}
-
-
 
 
 

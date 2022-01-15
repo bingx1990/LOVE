@@ -8,7 +8,7 @@
 #'   \item\code{I} The index of parallel rows.
 #'   \item\code{I_part} The partition of parallel rows.
 #' }
-#' @import igraph
+#'
 #' @noRd
 
 Est_Pure <- function(score_mat, delta) {
