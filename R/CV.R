@@ -104,6 +104,9 @@ CalFittedSigma <- function(Sigma, delta, Ms, arg_Ms, se_est, diagonal, merge) {
 #' @inheritParams LOVE
 #' @param ndelta Integer. The length of the grid of \code{delta}.
 #' @param q Either \code{2} or \code{Inf} to specify the type of score.
+#' @param exact Logical. Only active for compute the \code{Inf} score.
+#'   If TRUE, compute the \code{Inf} score exactly via solving a linear program.
+#'   Otherwise, use approximation to compute \code{Inf} score.
 #' @param nfolds The number of folds. Default is 10.
 #' @param max_pure A numeric value between (0, 1] specifying the maximal
 #'   proportion of pure variables. Default is NULL. When not specified,
@@ -130,13 +133,13 @@ CalFittedSigma <- function(Sigma, delta, Ms, arg_Ms, se_est, diagonal, merge) {
 #' @export
 
 
-KfoldCV_delta <- function(X, delta = NULL, ndelta = 50, q = 2, nfolds = 10,
-                    max_pure = NULL) {
+KfoldCV_delta <- function(X, delta = NULL, ndelta = 50, q = 2, exact = FALSE,
+                          nfolds = 10, max_pure = NULL) {
   n_total <- nrow(X)
   p_total <- ncol(X)
   R <- cor(X)
 
-  score_res <- Score_mat(R, q)
+  score_res <- Score_mat(R, q, exact)
   score_mat <- score_res$score
   moments_mat <- score_res$moments
 
@@ -158,7 +161,7 @@ KfoldCV_delta <- function(X, delta = NULL, ndelta = 50, q = 2, nfolds = 10,
     validX <- X[valid_ind,, drop = F]
     R1 <- cor(trainX);  R2 <- cor(validX)
 
-    score_res <- Score_mat(R1, q)
+    score_res <- Score_mat(R1, q, exact)
     score_mat_1 <- score_res$score
     moments_1 <- score_res$moments
 

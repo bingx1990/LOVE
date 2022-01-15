@@ -1,14 +1,10 @@
 # library(linprog)
 
 
-
 #' Function to calculate the score matrix
 #'
 #' @param R The correlation matrix.
-#' @inherit KfoldCV_delta
-#' @param exact Logical. Only active for compute the \code{Inf} score.
-#'   If TRUE, compute the \code{Inf} score exactly via solving a linear program.
-#'   Otherwise, use approximation to compute \code{Inf} score.
+#' @inheritParams KfoldCV_delta
 #'
 #' @return A list including: \itemize{
 #'   \item \code{score} A score matrix.

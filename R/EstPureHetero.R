@@ -72,8 +72,7 @@ Est_BI_C <- function(M, R, I_part, I) {
 # \code{Re_Est_Pure} re-estimates the pure variables from the selected parallel
 # rows
 
-Re_Est_Pure <- function(X, Sigma, R, M, I_part, Gamma, opt_Delta,
-                        K_method = "cv-mu") {
+Re_Est_Pure <- function(X, Sigma, M, I_part, Gamma) {
   L_hat <- sapply(I_part, function(x, M) {
     x <- as.numeric(x)
     row_norms <- vapply(x, function(i, M) {
@@ -83,12 +82,9 @@ Re_Est_Pure <- function(X, Sigma, R, M, I_part, Gamma, opt_Delta,
   }, M = M)
 
   Gamma_LL <- Gamma[L_hat]
-  M_LL <- R[L_hat, L_hat, drop = F] - diag(Gamma_LL, length(L_hat), length(L_hat))
+  K_est <- Est_K(X, L_hat, Gamma_LL)
 
-  K_est <- Est_K(X, M_LL, L_hat, Gamma_LL, delta = opt_Delta, method = K_method)
-
-  if (K_est < length(I_part) & K_est >= 1) {
-    # cat("Re-estimate pure variables.")
+  if (K_est < length(I_part) & K_est >= 1) { # Re-select the pure variables
     I_part_tilde <- Post_Est_Pure(Sigma, Gamma_LL, L_hat, I_part, K_est)
   } else
     I_part_tilde <- I_part
@@ -131,70 +127,37 @@ Post_Est_Pure <- function(Sigma, Gamma_LL, L_hat, I_part, K_tilde) {
 #'   of representative parallel rows. This should only be used after a given set of
 #'   representative parallel rows are selected.
 #'
-#' @inheritParams KfoldCV
-#' @param Q
-#' @param L_hat
-#' @param Gamma_LL
-#' @param method The method to be used. One of \\{"addtive", "cv-mu", "cv-rank"\\}.
-#' @grid A grid of the leading constants when \code{method} is "cv-mu".
+#' @inheritParams KfoldCV_delta
+#' @param L_hat A vector of he representative indices of parallel rows.
+#' @param Gamma_LL A vector of numeric values.
 #'
 #' @return An integer. The estimated \eqn{K}.
-#' @export
+#' @noRd
 
 
-Est_K <- function(X, Q, L_hat, Gamma_LL, delta = NULL, method,
-                  grid = seq(0.1, 0.5, 0.02)) {
+Est_K <- function(X, L_hat, Gamma_LL) {
 
-  if (method == 'additive') {
+  n <- nrow(X)
+  K_hat <- length(L_hat)
+  n_ind <- sample(1:n, floor(n / 2))
+  X1 <- X[n_ind,]
+  X2 <- X[-n_ind,]
 
-    svals <- svd(Q, 0, 0)$d
-    len <- length(svals)
-    K_tilde <- sum(svals >= delta * length(L_hat))
+  R1 <- cor(X1)
+  R2 <- cor(X2)
 
-  } else if (method == "cv-mu" || method == "cv-rank") {
+  Gamma_LL_mat <- diag(Gamma_LL, K_hat, K_hat)
+  M1 <- R1[L_hat, L_hat, drop = F] - Gamma_LL_mat
+  M2 <- R2[L_hat, L_hat, drop = F] - Gamma_LL_mat
 
-    n <- nrow(X)
-    K_hat <- length(L_hat)
-    n_ind <- sample(1:n, floor(n / 2))
-    X1 <- X[n_ind,]
-    X2 <- X[-n_ind,]
+  res_eig <- eigen(M1)
 
-    R1 <- cor(X1)
-    R2 <- cor(X2)
+  K_tilde <- which.min(sapply(1:K_hat, function(x, res_eig, M2) {
+    U <- res_eig$vectors[,1:x, drop = F]
+    M_tilde <- U %*% diag(res_eig$values)[1:x, 1:x, drop = F] %*% t(U)
+    sum((M_tilde - M2) ** 2)
+  }, res_eig = res_eig, M2 = M2))
 
-    Gamma_LL_mat <- diag(Gamma_LL, K_hat, K_hat)
-    M1 <- R1[L_hat, L_hat, drop = F] - Gamma_LL_mat
-    M2 <- R2[L_hat, L_hat, drop = F] - Gamma_LL_mat
-
-    res_eig <- eigen(M1)
-
-    if (method == "cv-mu") {
-      mu_grid <- grid * (sqrt(K_hat * delta ** 2) + K_hat * delta ** 2)
-
-      mu_ind = which.min(sapply(mu_grid, function(mu_tmp, res_eig, M2) {
-        x <- sum(res_eig$values >= mu_tmp)
-        if (x >= 1) {
-          U <- res_eig$vectors[,1:x, drop = F]
-          M_tilde <- U %*% diag(res_eig$values)[1:x, 1:x, drop = F] %*% t(U)
-          loss = sum((M_tilde - M2) ** 2)
-        } else
-          loss = sum(M2 ** 2)
-        loss
-      }, res_eig = res_eig, M2 = M2))
-
-      K_tilde <- sum(res_eig$values >=  mu_grid[mu_ind])
-
-    } else {
-
-      K_tilde <- which.min(sapply(1:K_hat, function(x, res_eig, M2) {
-        U <- res_eig$vectors[,1:x, drop = F]
-        M_tilde <- U %*% diag(res_eig$values)[1:x, 1:x, drop = F] %*% t(U)
-        sum((M_tilde - M2) ** 2)
-      }, res_eig = res_eig, M2 = M2))
-
-    }
-
-  }
   return(K_tilde)
 }
 
