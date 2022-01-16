@@ -44,7 +44,7 @@ clustering of the columns of the matrix.
 
 ``` r
 library(LOVE)
-# basic example code
+
 res_LOVE <- LOVE(X, pure_homo = FALSE)
 res_LOVE <- LOVE(X, pure_homo = TRUE, delta = seq(0.1, 1.1 ,0.1))
 ```
@@ -61,7 +61,9 @@ aug_p <- nrow(aug_A)
 E <- matrix(rnorm(n * aug_p), n, aug_p)
 X <- Z %*% t(aug_A) + E
 
-noise_ind <- Screen_X(X)
+noise_ind <- Screen_X(X)$noise_ind
+cat("Features with indices in", noise_ind, "are detected as pure noise.\n")
+#> Features with indices in 7 are detected as pure noise.
 feature_ind <- setdiff(1:aug_p, noise_ind)
 
 res_LOVE <- LOVE(X[,feature_ind,drop = F], pure_homo = FALSE)
