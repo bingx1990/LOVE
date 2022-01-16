@@ -78,10 +78,17 @@
 #'
 #' @export
 #' @import stats
-#' @references Bing, X., Bunea, F., Yang N and Wegkamp, M. (2020) \emph{Adaptive
+#' @references
+#'
+#' Bing, X., Bunea, F., Yang N and Wegkamp, M. (2020) \emph{Adaptive
 #' estimation in structured factor models with applications to overlapping clustering},
 #' Annals of Statistics, Vol.48(4) 2055 - 2081, August 2020.
 #' \url{https://projecteuclid.org/journals/annals-of-statistics/volume-48/issue-4/Adaptive-estimation-in-structured-factor-models-with-applications-to-overlapping/10.1214/19-AOS1877.short}
+#'
+#' Bing, X., Bunea, F. and Wegkamp, M. (2021) \emph{Detecting approximate replicate
+#' components of a high-dimensional random vector with latent structure}.
+#' \url{https://arxiv.org/abs/2010.02288}.
+
 
 LOVE <- function(X, lbd = 0.5, mu = 0.5, est_non_pure_row = "HT", verbose = FALSE,
                  pure_homo = FALSE, diagonal = FALSE,
