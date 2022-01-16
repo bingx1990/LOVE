@@ -79,6 +79,33 @@ dimensional feature generated from the latent factor model
 \deqn{X = AZ + E}
 with identifiability conditions on \eqn{A} and \eqn{Cov(Z)}.
 }
+\details{
+\code{LOVE} performs overlapping clustering of the feature variables
+  \eqn{X} generated from the latent factor model
+  \deqn{X = AZ+E}
+  where the loading matrix \eqn{A} and the covariance matrix of \eqn{Z}
+  satisfy certain identifiability conditions. The main goal is to estimate
+  the loading matrix \eqn{A} whose support is used to form overlapping groups
+  of \eqn{X}.
+
+  The first step estimates the pure loadings, defined as the rows of \eqn{A}
+  that are proportional to canonical vectors. When the pure loadings are
+  expected to have the same magnitudes (up to the sign), for instance,
+  \deqn{A_{1.} = (1, 0, 0), A_{2.} = (-1, 0, 0),}
+  the estimation of pure loadings is done via setting \code{pure_homo} to
+  \code{TRUE}. When different magnitudes are expected for the pure loadings,
+  such as \deqn{A_{1.} = (1, 0, 0), A_{2.} = (-0.5, 0, 0),}
+  the estimation uses a different approach by setting setting \code{pure_homo}
+  to \code{FALSE}.
+
+  The second step estimates the non-pure (mixed) loadings of \eqn{A}. Three
+  procedures are available as specified by \code{est_non_pure_row}. The choice
+  "HT" specifies the estimation via hard-thresholding that is computationally
+  fast while "ST" uses soft-thresholding instead. Both "ST" and "Dantzig"
+  resort to solving linear programs. Another difference of "Dantzig" from "HT"
+  and "ST" is that the former does not require to estimate the precision
+  matrix of \eqn{Z}.
+}
 \examples{
 p <- 6
 n <- 100

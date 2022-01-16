@@ -38,6 +38,33 @@
 #'   \item \code{optDelta} The selected value of \eqn{\delta}.
 #' }
 #'
+#' @details \code{LOVE} performs overlapping clustering of the feature variables
+#'   \eqn{X} generated from the latent factor model
+#'   \deqn{X = AZ+E}
+#'   where the loading matrix \eqn{A} and the covariance matrix of \eqn{Z}
+#'   satisfy certain identifiability conditions. The main goal is to estimate
+#'   the loading matrix \eqn{A} whose support is used to form overlapping groups
+#'   of \eqn{X}.
+#'
+#'   The first step estimates the pure loadings, defined as the rows of \eqn{A}
+#'   that are proportional to canonical vectors. When the pure loadings are
+#'   expected to have the same magnitudes (up to the sign), for instance,
+#'   \deqn{A_{1.} = (1, 0, 0), A_{2.} = (-1, 0, 0),}
+#'   the estimation of pure loadings is done via setting \code{pure_homo} to
+#'   \code{TRUE}. When different magnitudes are expected for the pure loadings,
+#'   such as \deqn{A_{1.} = (1, 0, 0), A_{2.} = (-0.5, 0, 0),}
+#'   the estimation uses a different approach by setting setting \code{pure_homo}
+#'   to \code{FALSE}.
+#'
+#'   The second step estimates the non-pure (mixed) loadings of \eqn{A}. Three
+#'   procedures are available as specified by \code{est_non_pure_row}. The choice
+#'   "HT" specifies the estimation via hard-thresholding that is computationally
+#'   fast while "ST" uses soft-thresholding instead. Both "ST" and "Dantzig"
+#'   resort to solving linear programs. Another difference of "Dantzig" from "HT"
+#'   and "ST" is that the former does not require to estimate the precision
+#'   matrix of \eqn{Z}.
+#'
+#'
 #' @examples
 #' p <- 6
 #' n <- 100
@@ -164,30 +191,12 @@ LOVE <- function(X, lbd = 0.5, mu = 0.5, est_non_pure_row = "HT", verbose = FALS
   if (verbose)
     cat("Finish estimating the pure loadings...\n")
 
-  if (diagonal)
-    Omega <- diag(diag(C_hat) ** (-1))
-  else {
-    if (verbose)
-      cat("Select lambda for estimating the precision of Z...\n")
 
-    lbdGrids <- lbd * optDelta
-    optLbd <- ifelse(length(lbd) > 1,
-                     median(replicate(rep_CV, CV_lbd(X, lbdGrids, A_hat, I_hat, diagonal))),
-                     lbdGrids)
-    if (verbose) {
-      cat("Select lambda =", optLbd, "with leading constant",
-          min(which(lbdGrids >= optLbd)),"...\n")
-      cat("Start estimating the precision of Z...\n")
-    }
-    Omega <- estOmega(optLbd, C_hat)
-  }
 
-  if (length(I_hat) == p)   ### the case that all variables are pure
+  if (length(I_hat) == p)  {### the case that all variables are pure
     group <- resultAI$pureSignInd
-  else {
-    Y <- EstY(Sigma, A_hat, I_hat)
-    threshold <- mu * optDelta * norm(Omega, "I")
-
+    Omega <- NULL
+  } else {
     if (verbose) {
       cat("Estimate the non-pure loadings by",
           switch(est_non_pure_row,
@@ -196,16 +205,39 @@ LOVE <- function(X, lbd = 0.5, mu = 0.5, est_non_pure_row = "HT", verbose = FALS
                  "Dantzig" = "Dantzig"), "...\n")
     }
 
-    if (est_non_pure_row == "HT")
-      AJ <- threshA(t(Omega %*% Y), threshold)
-    else if (est_non_pure_row == "ST")
-      AJ <- EstAJInv(Omega, Y, threshold)
-    else if (est_non_pure_row == "Dantzig") {
+    if (est_non_pure_row == "Dantzig") {
       AI <- abs(A_hat[I_hat, ])
       sigma_bar_sup <- max(solve(crossprod(AI), t(AI)) %*% se_est[I_hat])
       AJ <- EstAJDant(C_hat, Y, mu * optDelta * sigma_bar_sup, sigma_bar_sup + se_est[-I_hat])
-    } else
-      cat("Unknown method of estimating the non-pure rows.\n")
+    } else {
+      if (diagonal)
+        Omega <- diag(diag(C_hat) ** (-1))
+      else {
+        if (verbose)
+          cat("Select lambda for estimating the precision of Z...\n")
+
+        lbdGrids <- lbd * optDelta
+        optLbd <- ifelse(length(lbd) > 1,
+                         median(replicate(rep_CV, CV_lbd(X, lbdGrids, A_hat, I_hat, diagonal))),
+                         lbdGrids)
+        if (verbose) {
+          cat("Select lambda =", optLbd, "with leading constant",
+              min(which(lbdGrids >= optLbd)),"...\n")
+          cat("Start estimating the precision of Z...\n")
+        }
+        Omega <- estOmega(optLbd, C_hat)
+      }
+
+      Y <- EstY(Sigma, A_hat, I_hat)
+      threshold <- mu * optDelta * norm(Omega, "I")
+
+      if (est_non_pure_row == "HT")
+        AJ <- threshA(t(Omega %*% Y), threshold)
+      else if (est_non_pure_row == "ST")
+        AJ <- EstAJInv(Omega, Y, threshold)
+      else
+        cat("Unknown method of estimating the non-pure rows.\n")
+    }
 
     A_hat[-I_hat, ] <- AJ
     group <-recoverGroup(A_hat)

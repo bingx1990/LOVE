@@ -3,4 +3,5 @@
 export(KfoldCV_delta)
 export(LOVE)
 export(Screen_X)
+export(estOmega)
 import(stats)

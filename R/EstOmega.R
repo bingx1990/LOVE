@@ -6,19 +6,29 @@
 # library(linprog)
 
 
-#' Estimate the precision matrix of \eqn{Z} via LP
+#' Estimation of the precision matrix
+#'
+#' \code{estOmega} estimates the inverse matrix of \code{C} via regularizations.
 #'
 #' @param lbd A numeric constant.
-#' @param C_hat A \eqn{K} by \eqn{K} matrix.
+#' @param C A \eqn{K} by \eqn{K} matrix.
 #'
 #' @return A \eqn{K} by \eqn{K} matrix.
-#' @noRd
+#' @details For a given matrix \code{C}, \code{estOmega} finds its inverse
+#'   by solving the following linear program
+#'   \deqn{\min_{\Omega} ||\Omega||_{\infty,1}}
+#'   subject to
+#'   \deqn{||C \Omega - I|| \le \lambda.}
+#'   The above LP is solved by decoupling into several linear programs, each of
+#'   which solves one row of \eqn{\Omega}.
+#'
+#' @export
 
-estOmega <- function(lbd, C_hat) {
-  K <- nrow(C_hat)
+estOmega <- function(lbd, C) {
+  K <- nrow(C)
   omega <- matrix(0, K, K)
   for (i in 1:K) {
-    omega[,i] <- solve_row(i, C_hat, lbd)
+    omega[,i] <- solve_row(i, C, lbd)
   }
   return(omega)
 }
