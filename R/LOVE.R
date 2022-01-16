@@ -73,7 +73,7 @@ LOVE <- function(X, lbd = 0.5, mu = 0.5, est_non_pure_row = "HT", verbose = FALS
     if (verbose)
       cat("Select delta by using data splitting...\n")
     optDelta <- ifelse(length(deltaGrids) > 1,
-                       median(replicate(rep_CV, CV_Delta(X, deltaGrids, diagonal,
+                       median(replicate(rep_CV, CV_delta(X, deltaGrids, diagonal,
                                                          se_est, merge))),
                        deltaGrids)
 
@@ -89,7 +89,7 @@ LOVE <- function(X, lbd = 0.5, mu = 0.5, est_non_pure_row = "HT", verbose = FALS
     if (sum(pure_numb == 1) > 0) {
       cat("Change 'merge' to 'union' and reselecting delta ... \n")
       optDelta <- ifelse(length(deltaGrids) > 1,
-                         median(replicate(rep_CV, CV_Delta(X, deltaGrids, diagonal,
+                         median(replicate(rep_CV, CV_delta(X, deltaGrids, diagonal,
                                                            se_est, merge = F))),
                          deltaGrids)
       resultAI <- EstAI(Sigma, optDelta, se_est, merge = F)

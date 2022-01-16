@@ -18,7 +18,7 @@
 #'
 #' @return A numeric constant. The selected optimal \eqn{\delta}.
 
-CV_Delta <- function(X, deltaGrids, diagonal, se_est, merge) {
+CV_delta <- function(X, deltaGrids, diagonal, se_est, merge) {
   n <- nrow(X); p <- ncol(X)
   sampInd <- sample(n, floor(n / 2))
   X1 <- X[sampInd, ]

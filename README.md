@@ -6,8 +6,8 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-LOVE performs overlapping clustering of features under a structured
-latent factor model.
+LOVE performs overlapping clustering of feature variables under a
+structured latent factor model.
 
 ## Installation
 
