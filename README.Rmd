@@ -51,7 +51,7 @@ X <- Z %*% t(A) + E
 ```
 
 The following code calls the LOVE function to perform overlapping clustering of 
-the columns of the \strong{X} matrix.
+the columns of the ${\mathbf X}$ matrix.
 
 ```{r example-LOVE}
 library(LOVE)
@@ -64,9 +64,9 @@ res_LOVE <- LOVE(X, pure_homo = TRUE, delta = seq(0.1, 1.1 ,0.1))
 ## Practical pre-screening
 
 In practice, we recommend a pre-screening procedure before calling the 
-\code{LOVE} function. The function \code{Screen_X} detects the features that are
+LOVE function. The function Screen_X detects the features that are
 close to pure noise. The following example demonstrates the usage of 
-\code{Screen_X}.
+Screen_X.
 
 ```{r example-Prescreen}
 aug_A <- rbind(A, c(0, 0))
